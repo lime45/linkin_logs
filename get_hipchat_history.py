@@ -34,9 +34,10 @@ def convert_time_to_local(time_object):
     return utc.astimezone(to_zone)
 
 def my_requestsget(url):
-    global requests_sent, time_variable
-    current_time = strfime("%Y-%m-%d %H:%M:%S", gmtime())
-    current_time = gg
+    global requests_sent
+    requests_sent += 1
+    if requests_sent == 499:
+        return
     return requests.get(url)
 
 
