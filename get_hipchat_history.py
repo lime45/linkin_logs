@@ -8,7 +8,7 @@ import json
 from dateutil import tz
 from tzlocal import get_localzone 
 import logging
-import os
+from os.path import getmtime
 import re
 import time
 import requests
@@ -107,16 +107,15 @@ SECONDS_TO_DIRTY_CACHE_FILE = 86400 # a day
 
 def cache_file_valid():
     try:
-        modtime = os.path.getmtime(CACHE_FILE)
+        modtime = getmtime(CACHE_FILE)
         if time.time() - modtime < SECONDS_TO_DIRTY_CACHE_FILE:
             return True
     except:
-        print time.time() - modtime
-        exit(0)
+        return False
 
 def write_room_dict_to_cache_file(room_dict):
     with open(CACHE_FILE, 'w') as cf:
-        cf.write(room_dict)
+        cf.write(str(room_dict))
 
 def get_room_dict_from_cache_file():
     if cache_file_valid():
@@ -127,7 +126,7 @@ def get_room_dict_from_cache_file():
         return {}
 
 def get_room_dict_from_url(api_url, api_token):
-    token_snippet = "auth_token={api_token}".format(api_token="6He1vooYEwgOV1CT8Sh7kacRjWOeU901tI504msI")
+    token_snippet = "auth_token={api_token}".format(api_token=api_token)
     full_url = api_url + "/room?" + token_snippet
     rooms = my_requestsget(full_url).json()
     room_dict = {}
