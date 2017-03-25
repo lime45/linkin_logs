@@ -8,6 +8,7 @@ import json
 from dateutil import tz
 from tzlocal import get_localzone 
 import logging
+import os
 import re
 import time
 import requests
@@ -101,7 +102,31 @@ def print_hipchat_log(api_url, api_token, room_number, begin_date, end_date, num
         if this_page_of_logs_json["items"] == []:
             messages_remaining = False
 
-def get_available_rooms_dict(api_url, api_token):
+CACHE_FILE = 'c:/Users/christopher.browning/docs/hipchat_logs/cache_file'
+SECONDS_TO_DIRTY_CACHE_FILE = 86400 # a day
+
+def cache_file_valid():
+    try:
+        modtime = os.path.getmtime(CACHE_FILE)
+        if time.time() - modtime < SECONDS_TO_DIRTY_CACHE_FILE:
+            return True
+    except:
+        print time.time() - modtime
+        exit(0)
+
+def write_room_dict_to_cache_file(room_dict):
+    with open(CACHE_FILE, 'w') as cf:
+        cf.write(room_dict)
+
+def get_room_dict_from_cache_file():
+    if cache_file_valid():
+        with open(CACHE_FILE, 'r') as cf:
+            room_dict = eval(cf.read())
+        return room_dict
+    else:
+        return {}
+
+def get_room_dict_from_url(api_url, api_token):
     token_snippet = "auth_token={api_token}".format(api_token="6He1vooYEwgOV1CT8Sh7kacRjWOeU901tI504msI")
     full_url = api_url + "/room?" + token_snippet
     rooms = my_requestsget(full_url).json()
@@ -109,7 +134,15 @@ def get_available_rooms_dict(api_url, api_token):
     if "items" in rooms:
         for name in rooms["items"]:
             room_dict[name["name"].encode('ascii', 'ignore')] = repr(name["id"])
+    write_room_dict_to_cache_file(room_dict)
     return room_dict
+
+
+def get_available_rooms_dict(api_url, api_token):
+    if cache_file_valid():
+        return get_room_dict_from_cache_file()
+    else:
+        return get_room_dict_from_url(api_url, api_token)
 
 def find_rooms_by_name_snippet(api_url, api_token, name_snippet):
     room_dict = get_available_rooms_dict(api_url, api_token)
