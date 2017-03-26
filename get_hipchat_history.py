@@ -44,12 +44,6 @@ def convert_time_to_utc(time_object):
     utc = time_object.replace(tzinfo=from_zone)
     return utc.astimezone(to_zone)
 
-def rolling_avg(new_sample):
-    global circular_queue
-    circular_queue.append(new_sample)
-    average = sum(circular_queue)/len(circular_queue)
-    return average
-
 def my_requestsget(url):
     global reset_time, remaining_requests
     this_request = requests.get(url)
@@ -65,12 +59,6 @@ def my_requestsget(url):
             logger.debug("sleeping for {sleep_time} seconds".format(sleep_time=wait_time))
             time.sleep(wait_time)
     return this_request
-
-def say(self, message, color="yellow"):
-    payload = json.dumps(
-        {"color": color, "message": message, "notify": 'false', "message_format": "text"})
-    return requests.post(self._room_url, payload, headers=self._headers)
-
 
 def print_hipchat_log(api_url, api_token, room_number, begin_date, end_date, num_messages):
     messages_remaining = True
