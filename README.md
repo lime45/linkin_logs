@@ -1,7 +1,8 @@
 # linkin_logs
 Get Hipchat logs with throttler to maximize allotted requests
 
-`usage: get_hipchat_logs [-h] -c HIPCHAT_TOKEN [-e EARLIEST_DATE]
+```
+usage: get_hipchat_logs [-h] -c HIPCHAT_TOKEN [-e EARLIEST_DATE]
                         [-l LATEST_DATE] [-n NUMBER_MESSAGES] [-r ROOM_NUMBER]
                         [-s ROOMNAME_SNIPPET] [-u HIPCHATAPI_URL]
 
@@ -25,4 +26,5 @@ optional arguments:
                         snippet of roomname from which to get the log
   -u HIPCHATAPI_URL, --hipchatapi_url HIPCHATAPI_URL
                         hipchat api url (stop at 'v2', defaults to synapse
-                        hipchat`
+                        hipchat
+```
